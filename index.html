@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,12 +15,15 @@
             background-color: #f7f7f7;
             color: #333;
         }
-        h1, h2 {
+
+        h1,
+        h2 {
             font-family: 'Source Serif Pro', serif;
             text-align: center;
             margin-top: 30px;
             color: #333;
         }
+
         #product-form {
             max-width: 600px;
             margin: 20px auto;
@@ -28,7 +32,10 @@
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
-        input, textarea, button {
+
+        input,
+        textarea,
+        button {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -37,15 +44,18 @@
             font-size: 1rem;
             box-sizing: border-box;
         }
+
         button {
             background-color: #f39c12;
             color: white;
             cursor: pointer;
             border: none;
         }
+
         button:hover {
             background-color: #e67e22;
         }
+
         input[type="file"] {
             border: none;
             background-color: #f0f0f0;
@@ -60,6 +70,7 @@
             margin: 30px auto;
             padding: 0 20px;
         }
+
         .product {
             background-color: white;
             border-radius: 10px;
@@ -68,27 +79,33 @@
             transition: transform 0.3s ease-in-out;
             cursor: pointer;
         }
+
         .product:hover {
             transform: scale(1.05);
         }
+
         .product img {
             width: 100%;
             height: 250px;
             object-fit: cover;
             border-bottom: 1px solid #ddd;
         }
+
         .product-content {
             padding: 15px;
         }
+
         .product h3 {
             font-size: 1.2rem;
             margin: 10px 0;
         }
+
         .price {
             font-weight: bold;
             color: #f39c12;
             margin-bottom: 10px;
         }
+
         .description {
             font-size: 0.9rem;
             color: #666;
@@ -97,6 +114,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .delete-button {
             background-color: #e74c3c;
             color: white;
@@ -106,6 +124,7 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
         .delete-button:hover {
             background-color: #c0392b;
         }
@@ -115,29 +134,34 @@
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
+
             #product-form {
                 padding: 15px;
             }
-            input, textarea, button {
+
+            input,
+            textarea,
+            button {
                 font-size: 0.9rem;
             }
         }
     </style>
 </head>
+
 <body>
 
     <h1>Handicraft Product Catalog</h1>
 
     <!-- Product Submission Form -->
     <div id="product-form">
-        <h2>Add/Edit Product</h2>
+        <h2>Add New Product</h2>
         <form id="new-product-form">
             <input type="hidden" id="product-id"> <!-- Hidden field to store product ID -->
             <input type="text" id="product-name" placeholder="Product Name" required><br>
             <input type="number" id="product-price" placeholder="Price (₹)" required><br>
             <textarea id="product-description" placeholder="Product Description" required></textarea><br>
             <input type="file" id="product-image" accept="image/*"><br>
-            <button type="submit">Add/Update Product</button>
+            <button type="submit">Add Product</button>
         </form>
     </div>
 
@@ -145,7 +169,7 @@
     <div class="product-grid" id="product-grid"></div>
 
     <script>
-        const apiUrl = "https://script.google.com/macros/s/AKfycbyReE6GV5TyY9AW6dSSsJTUlt2tNFqXpoT_C31RndTe/dev"; // Replace with your Apps Script URL
+        const apiUrl = "https://script.google.com/macros/s/AKfycbx.../exec"; // Replace with your actual Google Apps Script URL
 
         // Fetch products from Google Sheets via API
         function fetchProducts() {
@@ -165,7 +189,6 @@
                                 <p class="price">₹${product.price}</p>
                                 <p class="description">${product.description}</p>
                                 <button class="delete-button" onclick="deleteProduct('${product.id}')">Delete</button>
-                                <button class="delete-button" onclick="editProduct('${product.id}')">Edit</button>
                             </div>
                         `;
                         productGrid.appendChild(productDiv);
@@ -174,7 +197,7 @@
                 .catch(error => console.error('Error fetching products:', error));
         }
 
-        // Function to handle form submission and add/update a product
+        // Function to handle form submission and add a new product
         document.getElementById('new-product-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent page reload
 
@@ -202,12 +225,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(productData)
                 })
-                .then(response => response.json())
-                .then(() => {
-                    fetchProducts(); // Reload the product list after adding/updating
-                })
-                .catch(error => console.error('Error adding/updating product:', error));
+                    .then(response => response.json())
+                    .then(() => {
+                        fetchProducts(); // Reload the product list after adding
+                    })
+                    .catch(error => console.error('Error adding/updating product:', error));
             };
+
             if (imageFile) {
                 reader.readAsDataURL(imageFile); // Read the image as a data URL if an image is selected
             } else {
@@ -220,29 +244,16 @@
             fetch(`${apiUrl}?id=${id}`, {
                 method: 'DELETE',
             })
-            .then(response => response.json())
-            .then(() => {
-                fetchProducts(); // Reload the product list after deletion
-            })
-            .catch(error => console.error('Error deleting product:', error));
-        }
-
-        // Function to edit a product by ID (populate form with existing data)
-        function editProduct(id) {
-            fetch(`${apiUrl}?id=${id}`)
                 .then(response => response.json())
-                .then(product => {
-                    document.getElementById('product-id').value = product.id;
-                    document.getElementById('product-name').value = product.name;
-                    document.getElementById('product-price').value = product.price;
-                    document.getElementById('product-description').value = product.description;
-                    // Image won't be set as it's a new file, so leave it empty
+                .then(() => {
+                    fetchProducts(); // Reload the product list after deletion
                 })
-                .catch(error => console.error('Error fetching product for edit:', error));
+                .catch(error => console.error('Error deleting product:', error));
         }
 
         // Load products when the page is ready
         fetchProducts();
     </script>
 </body>
+
 </html>
