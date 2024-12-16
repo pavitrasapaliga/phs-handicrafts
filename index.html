@@ -22,7 +22,7 @@
         }
 
         header h1 {
-            font-size: 40px;
+            font-size: 36px;
             margin: 0;
         }
 
@@ -64,7 +64,7 @@
         }
 
         .product h3 {
-            font-size: 22px;
+            font-size: 20px;
             color: #333;
             margin: 20px 0 10px;
         }
@@ -93,7 +93,7 @@
 
         /* Form Styling */
         .form-container {
-            max-width: 800px;
+            max-width: 100%;
             margin: 40px auto;
             padding: 30px;
             background-color: #fff;
@@ -104,16 +104,18 @@
         .form-container h2 {
             margin-bottom: 20px;
             text-align: center;
+            font-size: 24px;
         }
 
         .form-container input,
         .form-container textarea {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             margin-bottom: 15px;
             border-radius: 8px;
             border: 1px solid #ddd;
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         .form-container button {
@@ -131,6 +133,28 @@
             background-color: #218838;
         }
 
+        /* Drag-and-Drop Area */
+        #drop-area {
+            width: 100%;
+            height: 200px;
+            background-color: #f9f9f9;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        #drop-area.hover {
+            border-color: #28a745;
+            background-color: #e6f7e6;
+        }
+
         footer {
             background-color: #333;
             color: white;
@@ -144,6 +168,53 @@
         footer p {
             font-size: 16px;
             margin: 0;
+        }
+
+        /* Media Queries for Mobile */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 28px;
+            }
+
+            .product-container {
+                padding: 20px;
+            }
+
+            .product {
+                padding: 15px;
+            }
+
+            .product h3 {
+                font-size: 18px;
+            }
+
+            .price {
+                font-size: 18px;
+            }
+
+            .form-container {
+                margin: 20px 10px;
+                padding: 20px;
+            }
+
+            .form-container input,
+            .form-container textarea {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .form-container button {
+                padding: 15px;
+            }
+
+            #drop-area {
+                height: 150px;
+            }
+
+            footer {
+                font-size: 14px;
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -166,7 +237,13 @@
         <input type="text" id="product-name" placeholder="Product Name" required>
         <input type="number" id="product-price" placeholder="Price" required>
         <textarea id="product-description" placeholder="Product Description" required></textarea>
-        <input type="file" id="product-image" accept="image/*" required>
+
+        <!-- Drag-and-Drop Area -->
+        <div id="drop-area">
+            <p>Drag & Drop an Image Here</p>
+            <input type="file" id="product-image" accept="image/*" style="display:none;">
+        </div>
+
         <button type="submit">Add Product</button>
     </form>
 </div>
@@ -179,8 +256,49 @@
     // Get the form elements and product grid
     const form = document.getElementById('product-form');
     const productGrid = document.getElementById('product-grid');
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('product-image');
 
-    // Event listener for form submission
+    let uploadedImage = null;
+
+    // Drag-and-Drop Events
+    dropArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropArea.classList.add('hover');
+    });
+
+    dropArea.addEventListener('dragleave', function() {
+        dropArea.classList.remove('hover');
+    });
+
+    dropArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropArea.classList.remove('hover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;  // Set the file input to the dropped file
+            previewImage(files[0]);
+        }
+    });
+
+    // Allow clicking on the drop area to trigger file input
+    dropArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    // Preview the image after upload or drag and drop
+    function previewImage(file) {
+        const reader = new FileReader();
+        
+        reader.onloadend = function() {
+            uploadedImage = reader.result;
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    // Handle form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -188,36 +306,26 @@
         const name = document.getElementById('product-name').value;
         const price = document.getElementById('product-price').value;
         const description = document.getElementById('product-description').value;
-        const imageFile = document.getElementById('product-image').files[0];
 
-        // Create a new FileReader to read the uploaded image
-        const reader = new FileReader();
-        
-        reader.onloadend = function () {
-            // Create a new product element
-            const productDiv = document.createElement('div');
-            productDiv.classList.add('product');
+        // Create a new product element
+        const productDiv = document.createElement('div');
+        productDiv.classList.add('product');
 
-            // Set product content
-            productDiv.innerHTML = `
-                <img src="${reader.result}" alt="${name}">
-                <h3>${name}</h3>
-                <p class="price">$${price}</p>
-                <p>${description}</p>
-                <button>Buy Now</button>
-            `;
+        // Set product content with ₹ symbol for price
+        productDiv.innerHTML = `
+            <img src="${uploadedImage}" alt="${name}">
+            <h3>${name}</h3>
+            <p class="price">₹${price}</p>
+            <p>${description}</p>
+            <button>Buy Now</button>
+        `;
 
-            // Append the new product to the grid
-            productGrid.appendChild(productDiv);
-        };
+        // Append the new product to the grid
+        productGrid.appendChild(productDiv);
 
-        // If a file was uploaded, read it as data URL
-        if (imageFile) {
-            reader.readAsDataURL(imageFile);
-        }
-
-        // Clear the form
+        // Reset the form
         form.reset();
+        uploadedImage = null; // Reset the uploaded image for the next entry
     });
 </script>
 
