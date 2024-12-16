@@ -5,56 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Management</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f4f4f9;
-    }
-    h1, h2 {
-      color: #333;
-    }
-    .product-form, .product-list {
-      margin-bottom: 40px;
-    }
-    .product-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      padding: 10px;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    .product-item img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin-right: 20px;
-      border-radius: 8px;
-    }
-    .product-item h3 {
-      margin: 0;
-      color: #333;
-    }
-    .product-item p {
-      margin: 0;
-      color: #777;
-    }
-    .buttons {
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
+    /* Styling code... */
   </style>
 </head>
 <body>
@@ -70,61 +21,11 @@
     <button type="submit">Add Product</button>
   </form>
 
-  <h2>Update Product</h2>
-  <form id="updateProductForm" class="product-form">
-    <input type="text" id="productIdToUpdate" placeholder="Product ID" required><br><br>
-    <input type="text" id="updatedProductName" placeholder="Updated Product Name"><br><br>
-    <input type="number" id="updatedProductPrice" placeholder="Updated Price"><br><br>
-    <textarea id="updatedProductDescription" placeholder="Updated Description"></textarea><br><br>
-    <input type="file" id="updatedProductImage" accept="image/*"><br><br>
-    <button type="submit">Update Product</button>
-  </form>
-
-  <h2>Delete Product</h2>
-  <form id="deleteProductForm" class="product-form">
-    <input type="text" id="productIdToDelete" placeholder="Product ID to delete" required><br><br>
-    <button type="submit">Delete Product</button>
-  </form>
-
-  <h2>Product List</h2>
-  <div id="productList" class="product-list">
-    <!-- Product items will be listed here -->
-  </div>
-
   <script>
-    // Fetch the products and display them
-    function fetchProducts() {
-      fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec') // Replace with your Google Apps Script URL
-        .then(response => response.json())
-        .then(products => {
-          const productList = document.getElementById('productList');
-          productList.innerHTML = ''; // Clear existing products
-          
-          products.forEach(product => {
-            const productItem = document.createElement('div');
-            productItem.classList.add('product-item');
-            productItem.innerHTML = `
-              <img src="${product.image}" alt="Product Image">
-              <div>
-                <h3>${product.name}</h3>
-                <p>${product.description}</p>
-                <p><strong>₹${product.price}</strong></p>
-              </div>
-              <div class="buttons">
-                <button onclick="updateProductForm(${product.id}, '${product.name}', ${product.price}, '${product.description}', '${product.image}')">Update</button>
-                <button onclick="deleteProduct(${product.id})">Delete</button>
-              </div>
-            `;
-            productList.appendChild(productItem);
-          });
-        })
-        .catch(error => console.log('Error fetching products:', error));
-    }
-
-    // Handle Add Product
+    // Function to send product data to Google Apps Script
     document.getElementById('addProductForm').addEventListener('submit', function(event) {
       event.preventDefault();
-      
+
       const name = document.getElementById('productName').value;
       const price = document.getElementById('productPrice').value;
       const description = document.getElementById('productDescription').value;
@@ -142,7 +43,7 @@
           image: imageBase64
         };
 
-        fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec', {
+        fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec', {  // Replace with your Google Apps Script URL
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -152,107 +53,11 @@
         .then(response => response.json())
         .then(result => {
           alert(result);
-          fetchProducts(); // Refresh the product list
         })
         .catch(error => console.log('Error:', error));
       };
       reader.readAsDataURL(imageFile);
     });
-
-    // Handle Update Product
-    document.getElementById('updateProductForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const id = document.getElementById('productIdToUpdate').value;
-      const name = document.getElementById('updatedProductName').value;
-      const price = document.getElementById('updatedProductPrice').value;
-      const description = document.getElementById('updatedProductDescription').value;
-      const imageFile = document.getElementById('updatedProductImage').files[0];
-
-      const reader = new FileReader();
-      reader.onloadend = function() {
-        const imageBase64 = reader.result;
-
-        const data = {
-          action: 'update',
-          id: id,
-          name: name,
-          price: price,
-          description: description,
-          image: imageBase64
-        };
-
-        fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-          alert(result);
-          fetchProducts(); // Refresh the product list
-        })
-        .catch(error => console.log('Error:', error));
-      };
-      reader.readAsDataURL(imageFile);
-    });
-
-    // Handle Delete Product
-    document.getElementById('deleteProductForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const id = document.getElementById('productIdToDelete').value;
-
-      const data = {
-        action: 'delete',
-        id: id
-      };
-
-      fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(result => {
-        alert(result);
-        fetchProducts(); // Refresh the product list
-      })
-      .catch(error => console.log('Error:', error));
-    });
-
-    // Pre-load the product list when the page loads
-    window.onload = fetchProducts;
-    
-    // Populate the form for updating a product
-    function updateProductForm(id, name, price, description, image) {
-      document.getElementById('productIdToUpdate').value = id;
-      document.getElementById('updatedProductName').value = name;
-      document.getElementById('updatedProductPrice').value = price;
-      document.getElementById('updatedProductDescription').value = description;
-      document.getElementById('updatedProductImage').value = ''; // Clear the image input
-    }
-
-    // Delete product by ID
-    function deleteProduct(id) {
-      const data = { action: 'delete', id: id };
-
-      fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(result => {
-        alert(result);
-        fetchProducts(); // Refresh the product list
-      })
-      .catch(error => console.log('Error:', error));
-    }
   </script>
 
 </body>
