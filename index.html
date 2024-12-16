@@ -3,331 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Catalog - Add Product</title>
+    <title>Product Catalog</title>
     <style>
-        /* Global Styles */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-
-        header {
-            background-color: #333;
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 36px;
-            margin: 0;
-        }
-
-        header p {
-            font-size: 18px;
-            margin-top: 10px;
-            color: #ddd;
-        }
-
-        /* Product Grid Layout */
-        .product-container {
+        .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
-            padding: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Product Card Style */
-        .product {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            text-align: center;
             padding: 20px;
         }
-
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
         .product img {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
+            height: auto;
             border-radius: 8px;
-            transition: transform 0.3s ease;
         }
-
         .product h3 {
-            font-size: 20px;
-            color: #333;
-            margin: 20px 0 10px;
+            margin: 10px 0;
+            font-size: 1.2em;
         }
-
-        .price {
-            font-size: 20px;
+        .product p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .product .price {
             font-weight: bold;
-            color: #e74c3c;
-            margin-bottom: 15px;
+            color: #f39c12;
         }
-
-        .product button {
-            background-color: #28a745;
+        .delete-button {
+            background-color: #e74c3c;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 8px 12px;
+            cursor: pointer;
             border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-
-        .product button:hover {
-            background-color: #218838;
+        .delete-button:hover {
+            background-color: #c0392b;
         }
-
-        /* Form Styling */
-        .form-container {
-            max-width: 100%;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-container h2 {
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 24px;
-        }
-
-        .form-container input,
-        .form-container textarea {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        .form-container button {
-            width: 100%;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .form-container button:hover {
-            background-color: #218838;
-        }
-
-        /* Drag-and-Drop Area */
-        #drop-area {
-            width: 100%;
-            height: 200px;
-            background-color: #f9f9f9;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: #888;
-            font-size: 16px;
-            margin-bottom: 15px;
-            cursor: pointer;
-        }
-
-        #drop-area.hover {
-            border-color: #28a745;
-            background-color: #e6f7e6;
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
+        #product-form {
+            margin: 20px 0;
             padding: 20px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-
-        footer p {
-            font-size: 16px;
-            margin: 0;
-        }
-
-        /* Media Queries for Mobile */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 28px;
-            }
-
-            .product-container {
-                padding: 20px;
-            }
-
-            .product {
-                padding: 15px;
-            }
-
-            .product h3 {
-                font-size: 18px;
-            }
-
-            .price {
-                font-size: 18px;
-            }
-
-            .form-container {
-                margin: 20px 10px;
-                padding: 20px;
-            }
-
-            .form-container input,
-            .form-container textarea {
-                padding: 12px;
-                font-size: 14px;
-            }
-
-            .form-container button {
-                padding: 15px;
-            }
-
-            #drop-area {
-                height: 150px;
-            }
-
-            footer {
-                font-size: 14px;
-                padding: 15px;
-            }
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-
-<header>
     <h1>Product Catalog</h1>
-    <p>Add new products to the catalog</p>
-</header>
 
-<!-- Product Grid -->
-<div class="product-container" id="product-grid">
-    <!-- Dynamically added products will go here -->
-</div>
+    <div id="product-form">
+        <h2>Add New Product</h2>
+        <form id="new-product-form">
+            <input type="text" id="product-name" placeholder="Product Name" required><br><br>
+            <input type="number" id="product-price" placeholder="Price (₹)" required><br><br>
+            <textarea id="product-description" placeholder="Product Description" required></textarea><br><br>
+            <input type="file" id="product-image" accept="image/*" required><br><br>
+            <button type="submit">Add Product</button>
+        </form>
+    </div>
 
-<!-- Product Adding Form -->
-<div class="form-container">
-    <h2>Add a New Product</h2>
-    <form id="product-form" enctype="multipart/form-data">
-        <input type="text" id="product-name" placeholder="Product Name" required>
-        <input type="number" id="product-price" placeholder="Price" required>
-        <textarea id="product-description" placeholder="Product Description" required></textarea>
+    <div class="product-grid" id="product-grid"></div>
 
-        <!-- Drag-and-Drop Area -->
-        <div id="drop-area">
-            <p>Drag & Drop an Image Here</p>
-            <input type="file" id="product-image" accept="image/*" style="display:none;">
-        </div>
+    <script>
+        const apiUrl = "YOUR_GOOGLE_SCRIPT_URL"; // Replace with your Apps Script URL
 
-        <button type="submit">Add Product</button>
-    </form>
-</div>
+        // Fetch products from Google Sheets via API
+        function fetchProducts() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(products => {
+                    const productGrid = document.getElementById('product-grid');
+                    productGrid.innerHTML = ''; // Clear the grid before rendering new products
 
-<footer>
-    <p>&copy; 2024 My Product Catalog. All Rights Reserved.</p>
-</footer>
-
-<script>
-    // Get the form elements and product grid
-    const form = document.getElementById('product-form');
-    const productGrid = document.getElementById('product-grid');
-    const dropArea = document.getElementById('drop-area');
-    const fileInput = document.getElementById('product-image');
-
-    let uploadedImage = null;
-
-    // Drag-and-Drop Events
-    dropArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        dropArea.classList.add('hover');
-    });
-
-    dropArea.addEventListener('dragleave', function() {
-        dropArea.classList.remove('hover');
-    });
-
-    dropArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        dropArea.classList.remove('hover');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            fileInput.files = files;  // Set the file input to the dropped file
-            previewImage(files[0]);
+                    products.forEach(product => {
+                        const productDiv = document.createElement('div');
+                        productDiv.classList.add('product');
+                        productDiv.innerHTML = `
+                            <img src="${product.image}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p class="price">₹${product.price}</p>
+                            <p>${product.description}</p>
+                            <button class="delete-button" onclick="deleteProduct('${product.name}')">Delete</button>
+                        `;
+                        productGrid.appendChild(productDiv);
+                    });
+                })
+                .catch(error => console.error('Error fetching products:', error));
         }
-    });
 
-    // Allow clicking on the drop area to trigger file input
-    dropArea.addEventListener('click', function() {
-        fileInput.click();
-    });
+        // Function to handle form submission and add a new product
+        document.getElementById('new-product-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent page reload
 
-    // Preview the image after upload or drag and drop
-    function previewImage(file) {
-        const reader = new FileReader();
-        
-        reader.onloadend = function() {
-            uploadedImage = reader.result;
-        };
+            const name = document.getElementById('product-name').value;
+            const price = document.getElementById('product-price').value;
+            const description = document.getElementById('product-description').value;
+            const imageFile = document.getElementById('product-image').files[0]; // Get the image file
 
-        reader.readAsDataURL(file);
-    }
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const imageBase64 = reader.result.split(',')[1]; // Get base64 string of the image
 
-    // Handle form submission
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
+                // Send the new product data, including the base64 image, to your Google Sheets via the API
+                const newProduct = {
+                    name: name,
+                    price: price,
+                    description: description,
+                    image: imageBase64
+                };
 
-        // Get form values
-        const name = document.getElementById('product-name').value;
-        const price = document.getElementById('product-price').value;
-        const description = document.getElementById('product-description').value;
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProduct)
+                })
+                .then(response => response.json())
+                .then(() => {
+                    fetchProducts(); // Reload the product list after adding
+                })
+                .catch(error => console.error('Error adding product:', error));
+            };
+            reader.readAsDataURL(imageFile); // Read the image as a data URL
+        });
 
-        // Create a new product element
-        const productDiv = document.createElement('div');
-        productDiv.classList.add('product');
-
-        // Set product content with ₹ symbol for price
-        productDiv.innerHTML = `
-            <img src="${uploadedImage}" alt="${name}">
-            <h3>${name}</h3>
-            <p class="price">₹${price}</p>
-            <p>${description}</p>
-            <button>Buy Now</button>
-        `;
-
-        // Append the new product to the grid
-        productGrid.appendChild(productDiv);
-
-        // Reset the form
-        form.reset();
-        uploadedImage = null; // Reset the uploaded image for the next entry
-    });
-</script>
-
+        // Load products when the page is ready
+        fetchProducts();
+    </script>
 </body>
 </html>
