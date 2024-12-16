@@ -3,61 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Management</title>
+  <title>Products Display</title>
   <style>
-    /* Styling code... */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .product-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .product {
+      background: white;
+      margin: 10px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 280px;
+      text-align: center;
+    }
+    .product img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    .product h3 {
+      font-size: 1.5em;
+      margin: 10px 0;
+    }
+    .product p {
+      font-size: 1em;
+      color: #555;
+    }
+    .product .price {
+      font-size: 1.2em;
+      color: #f39c12;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Product Management</h1>
+  <h1 style="text-align: center; padding-top: 20px;">Product Catalog</h1>
   
-  <h2>Add New Product</h2>
-  <form id="addProductForm" class="product-form">
-    <input type="text" id="productName" placeholder="Product Name" required><br><br>
-    <input type="number" id="productPrice" placeholder="Product Price" required><br><br>
-    <textarea id="productDescription" placeholder="Product Description" required></textarea><br><br>
-    <input type="file" id="productImage" accept="image/*" required><br><br>
-    <button type="submit">Add Product</button>
-  </form>
-
+  <div id="product-container" class="product-container"></div>
+  
   <script>
-    // Function to send product data to Google Apps Script
-    document.getElementById('addProductForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const name = document.getElementById('productName').value;
-      const price = document.getElementById('productPrice').value;
-      const description = document.getElementById('productDescription').value;
-      const imageFile = document.getElementById('productImage').files[0];
-
-      const reader = new FileReader();
-      reader.onloadend = function() {
-        const imageBase64 = reader.result;
-
-        const data = {
-          action: 'add',
-          name: name,
-          price: price,
-          description: description,
-          image: imageBase64
-        };
-
-        fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec', {  // Replace with your Google Apps Script URL
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-          alert(result);
-        })
-        .catch(error => console.log('Error:', error));
-      };
-      reader.readAsDataURL(imageFile);
-    });
+    // Fetch product data from Google Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbyCF87eG6Y3fSiB81O0upmQw8sViA4lO04ioQrcaeeASUjRiB8vXD9kwS-9g2uYZfjtEg/exec') // Replace with your Apps Script URL
+      .then(response => response.json())
+      .then(products => {
+        const container = document.getElementById('product-container');
+        products.forEach(product => {
+          const productDiv = document.createElement('div');
+          productDiv.classList.add('product');
+          
+          const productHtml = `
+            <img src="${product.image}" alt="${product.name}" />
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <p class="price">₹${product.price}</p>
+          `;
+          
+          productDiv.innerHTML = productHtml;
+          container.appendChild(productDiv);
+        });
+      })
+      .catch(error => console.error('Error fetching product data:', error));
   </script>
 
 </body>
