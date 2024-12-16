@@ -3,80 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Catalog</title>
+    <title>Handicraft Product Catalog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Source+Serif+Pro&display=swap" rel="stylesheet">
     <style>
+        /* General Styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
         }
+        h1, h2 {
+            font-family: 'Source Serif Pro', serif;
+            text-align: center;
+            margin-top: 30px;
+            color: #333;
+        }
+        #product-form {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #f39c12;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #e67e22;
+        }
+        input[type="file"] {
+            border: none;
+            background-color: #f0f0f0;
+        }
+
+        /* Product Grid */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
         .product {
-            border: 1px solid #ddd;
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .product:hover {
+            transform: scale(1.05);
         }
         .product img {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        .product-content {
+            padding: 15px;
         }
         .product h3 {
+            font-size: 1.2rem;
             margin: 10px 0;
-            font-size: 1.2em;
         }
-        .product p {
-            margin: 5px 0;
-            color: #555;
-        }
-        .product .price {
+        .price {
             font-weight: bold;
             color: #f39c12;
+            margin-bottom: 10px;
+        }
+        .description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+            height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .delete-button {
             background-color: #e74c3c;
             color: white;
-            border: none;
             padding: 8px 12px;
-            cursor: pointer;
+            border: none;
             border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
         }
         .delete-button:hover {
             background-color: #c0392b;
         }
-        #product-form {
-            margin: 20px 0;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            #product-form {
+                padding: 15px;
+            }
+            input, textarea, button {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Product Catalog</h1>
 
+    <h1>Handicraft Product Catalog</h1>
+
+    <!-- Product Submission Form -->
     <div id="product-form">
-        <h2>Add New Product</h2>
+        <h2>Add/Edit Product</h2>
         <form id="new-product-form">
-            <input type="text" id="product-name" placeholder="Product Name" required><br><br>
-            <input type="number" id="product-price" placeholder="Price (₹)" required><br><br>
-            <textarea id="product-description" placeholder="Product Description" required></textarea><br><br>
-            <input type="file" id="product-image" accept="image/*" required><br><br>
-            <button type="submit">Add Product</button>
+            <input type="hidden" id="product-id"> <!-- Hidden field to store product ID -->
+            <input type="text" id="product-name" placeholder="Product Name" required><br>
+            <input type="number" id="product-price" placeholder="Price (₹)" required><br>
+            <textarea id="product-description" placeholder="Product Description" required></textarea><br>
+            <input type="file" id="product-image" accept="image/*"><br>
+            <button type="submit">Add/Update Product</button>
         </form>
     </div>
 
+    <!-- Product Grid Display -->
     <div class="product-grid" id="product-grid"></div>
 
     <script>
-        const apiUrl = "YOUR_GOOGLE_SCRIPT_URL"; // Replace with your Apps Script URL
+        const apiUrl = "https://script.google.com/macros/s/AKfycbyReE6GV5TyY9AW6dSSsJTUlt2tNFqXpoT_C31RndTe/dev"; // Replace with your Apps Script URL
 
         // Fetch products from Google Sheets via API
         function fetchProducts() {
@@ -91,10 +160,13 @@
                         productDiv.classList.add('product');
                         productDiv.innerHTML = `
                             <img src="${product.image}" alt="${product.name}">
-                            <h3>${product.name}</h3>
-                            <p class="price">₹${product.price}</p>
-                            <p>${product.description}</p>
-                            <button class="delete-button" onclick="deleteProduct('${product.name}')">Delete</button>
+                            <div class="product-content">
+                                <h3>${product.name}</h3>
+                                <p class="price">₹${product.price}</p>
+                                <p class="description">${product.description}</p>
+                                <button class="delete-button" onclick="deleteProduct('${product.id}')">Delete</button>
+                                <button class="delete-button" onclick="editProduct('${product.id}')">Edit</button>
+                            </div>
                         `;
                         productGrid.appendChild(productDiv);
                     });
@@ -102,40 +174,72 @@
                 .catch(error => console.error('Error fetching products:', error));
         }
 
-        // Function to handle form submission and add a new product
+        // Function to handle form submission and add/update a product
         document.getElementById('new-product-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent page reload
 
+            const id = document.getElementById('product-id').value;
             const name = document.getElementById('product-name').value;
             const price = document.getElementById('product-price').value;
             const description = document.getElementById('product-description').value;
-            const imageFile = document.getElementById('product-image').files[0]; // Get the image file
+            const imageFile = document.getElementById('product-image').files[0];
 
             const reader = new FileReader();
             reader.onloadend = function() {
                 const imageBase64 = reader.result.split(',')[1]; // Get base64 string of the image
 
-                // Send the new product data, including the base64 image, to your Google Sheets via the API
-                const newProduct = {
+                const productData = {
+                    id: id || new Date().getTime().toString(), // If no ID, generate a new one
                     name: name,
                     price: price,
                     description: description,
                     image: imageBase64
                 };
 
+                // Send the product data to the Google Script to update/add it to the Google Sheets
                 fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newProduct)
+                    body: JSON.stringify(productData)
                 })
                 .then(response => response.json())
                 .then(() => {
-                    fetchProducts(); // Reload the product list after adding
+                    fetchProducts(); // Reload the product list after adding/updating
                 })
-                .catch(error => console.error('Error adding product:', error));
+                .catch(error => console.error('Error adding/updating product:', error));
             };
-            reader.readAsDataURL(imageFile); // Read the image as a data URL
+            if (imageFile) {
+                reader.readAsDataURL(imageFile); // Read the image as a data URL if an image is selected
+            } else {
+                reader.onloadend(); // Skip reading if no image
+            }
         });
+
+        // Function to delete a product by ID
+        function deleteProduct(id) {
+            fetch(`${apiUrl}?id=${id}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(() => {
+                fetchProducts(); // Reload the product list after deletion
+            })
+            .catch(error => console.error('Error deleting product:', error));
+        }
+
+        // Function to edit a product by ID (populate form with existing data)
+        function editProduct(id) {
+            fetch(`${apiUrl}?id=${id}`)
+                .then(response => response.json())
+                .then(product => {
+                    document.getElementById('product-id').value = product.id;
+                    document.getElementById('product-name').value = product.name;
+                    document.getElementById('product-price').value = product.price;
+                    document.getElementById('product-description').value = product.description;
+                    // Image won't be set as it's a new file, so leave it empty
+                })
+                .catch(error => console.error('Error fetching product for edit:', error));
+        }
 
         // Load products when the page is ready
         fetchProducts();
