@@ -162,11 +162,11 @@
 <!-- Product Adding Form -->
 <div class="form-container">
     <h2>Add a New Product</h2>
-    <form id="product-form">
+    <form id="product-form" enctype="multipart/form-data">
         <input type="text" id="product-name" placeholder="Product Name" required>
         <input type="number" id="product-price" placeholder="Price" required>
         <textarea id="product-description" placeholder="Product Description" required></textarea>
-        <input type="url" id="product-image" placeholder="Image URL" required>
+        <input type="file" id="product-image" accept="image/*" required>
         <button type="submit">Add Product</button>
     </form>
 </div>
@@ -188,23 +188,33 @@
         const name = document.getElementById('product-name').value;
         const price = document.getElementById('product-price').value;
         const description = document.getElementById('product-description').value;
-        const image = document.getElementById('product-image').value;
+        const imageFile = document.getElementById('product-image').files[0];
 
-        // Create a new product element
-        const productDiv = document.createElement('div');
-        productDiv.classList.add('product');
+        // Create a new FileReader to read the uploaded image
+        const reader = new FileReader();
+        
+        reader.onloadend = function () {
+            // Create a new product element
+            const productDiv = document.createElement('div');
+            productDiv.classList.add('product');
 
-        // Set product content
-        productDiv.innerHTML = `
-            <img src="${image}" alt="${name}">
-            <h3>${name}</h3>
-            <p class="price">$${price}</p>
-            <p>${description}</p>
-            <button>Buy Now</button>
-        `;
+            // Set product content
+            productDiv.innerHTML = `
+                <img src="${reader.result}" alt="${name}">
+                <h3>${name}</h3>
+                <p class="price">$${price}</p>
+                <p>${description}</p>
+                <button>Buy Now</button>
+            `;
 
-        // Append the new product to the grid
-        productGrid.appendChild(productDiv);
+            // Append the new product to the grid
+            productGrid.appendChild(productDiv);
+        };
+
+        // If a file was uploaded, read it as data URL
+        if (imageFile) {
+            reader.readAsDataURL(imageFile);
+        }
 
         // Clear the form
         form.reset();
